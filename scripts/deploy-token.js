@@ -14,9 +14,9 @@ async function main() {
     deploymentPath = path.join(__dirname, "..", "deployments", `${network}.json`);
     if (!fs.existsSync(deploymentPath)) {
       console.error(`No deployment found for network: ${network}`);
-      console.log("Deploying SocialDexDeployer contract first...");
+      console.log("Deploying KOA contract first...");
       
-      // Run the deploy.js script to deploy the SocialDexDeployer
+      // Run the deploy.js script to deploy the KOA
       require("./deploy.js");
       return;
     }
@@ -26,10 +26,17 @@ async function main() {
   }
 
   const deploymentData = JSON.parse(fs.readFileSync(deploymentPath, "utf8"));
-  const deployerAddress = deploymentData.SocialDexDeployer;
+  // Support both old and new property names
+  const deployerAddress = deploymentData.KOA || deploymentData.SocialDexDeployer;
 
-  console.log(`Loading SocialDexDeployer at: ${deployerAddress}`);
-  const socialDexDeployer = await ethers.getContractAt("SocialDexDeployer", deployerAddress);
+  if (!deployerAddress) {
+    console.error("No KOA contract address found in deployment data");
+    console.error("Deployment data:", deploymentData);
+    process.exit(1);
+  }
+
+  console.log(`Loading KOA at: ${deployerAddress}`);
+  const koa = await ethers.getContractAt("KOA", deployerAddress);
 
   // Example parameters for token deployment
   const tokenName = "MyToken";
@@ -37,7 +44,7 @@ async function main() {
   const tokenSupply = ethers.parseEther("1000000"); // 1 million tokens with 18 decimals
   
   // Tick value for price of 1 ETH = ~210,000 tokens
-  const initialTick = -104280; // Multiple of 60 for 0.3% fee tier
+  const initialTick = -120000  ; // Multiple of 60 for 0.3% fee tier
   const feeTier = 3000; // 0.3% fee tier
   
   // Step 1: Generate salt
@@ -47,7 +54,7 @@ async function main() {
   
   let saltResult;
   try {
-    saltResult = await socialDexDeployer.generateSalt(
+    saltResult = await koa.generateSalt(
       signerAddress,
       tokenName,
       tokenSymbol,
@@ -66,7 +73,7 @@ async function main() {
   const deploymentFee = ethers.parseEther("0.01"); // Example fee for initial liquidity
   
   try {
-    const tx = await socialDexDeployer.deployToken(
+    const tx = await koa.deployToken(
       tokenName,
       tokenSymbol,
       tokenSupply,

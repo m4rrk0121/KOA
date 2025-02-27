@@ -38,7 +38,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log("Deploying SocialDexDeployer with parameters:");
+  console.log("Deploying KOA with parameters:");
   console.log({
     taxCollector,
     weth,
@@ -48,8 +48,8 @@ async function main() {
   });
 
   // Deploy the contract
-  const SocialDexDeployer = await hre.ethers.getContractFactory("SocialDexDeployer");
-  const deployer = await SocialDexDeployer.deploy(
+  const KOA = await hre.ethers.getContractFactory("KOA");
+  const deployer = await KOA.deploy(
     taxCollector,
     weth,
     uniswapV3Factory,

@@ -22,7 +22,7 @@ contract Token is ERC20 {
     }
 }
 
-contract SocialDexDeployer is Ownable {
+contract KOA is Ownable {
     using TickMath for int24;
     using Bytes32AddressLib for bytes32;
 
