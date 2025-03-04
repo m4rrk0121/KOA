@@ -1,0 +1,15 @@
+{
+  "tokenAddress": "0x3b3E374628FA7593dD6BbC7E463B3Ba224a44623",
+  "lpNftId": "2220290",
+  "name": "Crypto Summit",
+  "symbol": "Summit",
+  "totalSupply": "1000000000000000000000000000",
+  "lpSupply": "990000000000000000000000000",
+  "recipientWallet": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "recipientAmount": "10000000000000000000000000",
+  "deployer": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "initialTick": -180800,
+  "targetMarketCap": 30000,
+  "ethPriceAtDeployment": 2171.77,
+  "timestamp": "2025-03-04T21:27:25.126Z"
+}

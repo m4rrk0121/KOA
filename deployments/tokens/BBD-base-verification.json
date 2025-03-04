@@ -1,0 +1,12 @@
+{
+  "network": "base",
+  "tokenAddress": "0x0C2E2306Bf04F7421D863c4D6Eb0D4ca05d50ea1",
+  "constructorArgs": [
+    "Base Big Dick",
+    "BBD",
+    "420690000000000000000000000000"
+  ],
+  "compilerVersion": "v0.8.19+commit.7dd6d404",
+  "optimization": true,
+  "runs": 200
+}

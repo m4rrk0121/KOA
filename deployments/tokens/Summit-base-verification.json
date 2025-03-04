@@ -1,0 +1,12 @@
+{
+  "network": "base",
+  "tokenAddress": "0x3b3E374628FA7593dD6BbC7E463B3Ba224a44623",
+  "constructorArgs": [
+    "Crypto Summit",
+    "Summit",
+    "1000000000000000000000000000"
+  ],
+  "compilerVersion": "v0.8.19+commit.7dd6d404",
+  "optimization": true,
+  "runs": 200
+}

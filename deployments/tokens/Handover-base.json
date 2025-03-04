@@ -1,0 +1,15 @@
+{
+  "tokenAddress": "0x03e71dD7e875183FAD97aB26cc737eB958D5D04D",
+  "lpNftId": "2220713",
+  "name": "Handover",
+  "symbol": "Handover",
+  "totalSupply": "1000000000000000000000000000",
+  "lpSupply": "990000000000000000000000000",
+  "recipientWallet": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "recipientAmount": "10000000000000000000000000",
+  "deployer": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "initialTick": -184400,
+  "targetMarketCap": 21000,
+  "ethPriceAtDeployment": 2175.56,
+  "timestamp": "2025-03-04T22:02:13.104Z"
+}

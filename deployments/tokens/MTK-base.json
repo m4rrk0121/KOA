@@ -1,9 +1,10 @@
 {
-  "tokenAddress": "0x2FEB4937B24aAB9D65265d24e0D0eb030EB80F4f",
-  "lpNftId": "2178563",
+  "tokenAddress": "0x2C8121b044F8847f513340A6A9E83d6f86488880",
+  "lpNftId": "2198109",
   "name": "MyToken",
   "symbol": "MTK",
   "supply": "1000000000000000000000000",
   "deployer": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
-  "deploymentTime": "2025-02-27T22:43:58.004Z"
+  "lockerAddress": "0x89b873d8Eb9702ca3af1e25fDb518b4Ef9Ea783C",
+  "deploymentTime": "2025-03-02T19:45:35.816Z"
 }

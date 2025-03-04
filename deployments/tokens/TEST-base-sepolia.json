@@ -1,0 +1,9 @@
+{
+  "tokenAddress": "0x3B4a044643B41841357C00efc089746445e0F4B2",
+  "lpNftId": "14646",
+  "name": "TestToken",
+  "symbol": "TEST",
+  "supply": "100000000000000000000000",
+  "deployer": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "timestamp": "2025-03-03T21:49:43.733Z"
+}

@@ -1,0 +1,12 @@
+{
+  "tokenAddress": "0x28428eE65bC67F289899555e28a79595057748c8",
+  "lpNftId": "2219348",
+  "name": "Me Julie",
+  "symbol": "Julie",
+  "supply": "1000000000000000000000000000",
+  "deployer": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "initialTick": -188580,
+  "targetMarketCap": 14000,
+  "ethPriceAtDeployment": 2163.55,
+  "timestamp": "2025-03-04T19:46:38.334Z"
+}

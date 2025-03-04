@@ -1,16 +1,19 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.26;
+pragma solidity ^0.8.25;
 
-interface IUniswapV3Factory {
-    function createPool(
-        address tokenA,
-        address tokenB,
-        uint24 fee
-    ) external returns (address pool);
-
-    function feeAmountTickSpacing(uint24 fee) external view returns (int24);
-
+// Interface for Uniswap V3 Pool
+interface IUniswapV3Pool {
     function initialize(uint160 sqrtPriceX96) external;
+}
+
+// Interface for MultiPositionLiquidityLocker
+interface IMultiPositionLiquidityLocker {
+    function initializePosition(
+        uint256 tokenId,
+        address owner,
+        uint64 unlockTime,
+        uint8 lpFeesCut
+    ) external;
 }
 
 interface INonfungiblePositionManager {
@@ -28,7 +31,16 @@ interface INonfungiblePositionManager {
         uint256 deadline;
     }
 
-    function mint(MintParams calldata params)
+    struct CollectParams {
+        uint256 tokenId;
+        address recipient;
+        uint128 amount0Max;
+        uint128 amount1Max;
+    }
+
+    function mint(
+        MintParams calldata params
+    )
         external
         payable
         returns (
@@ -38,11 +50,32 @@ interface INonfungiblePositionManager {
             uint256 amount1
         );
 
+    function createAndInitializePoolIfNecessary(
+        address token0,
+        address token1,
+        uint24 fee,
+        uint160 sqrtPriceX96
+    ) external payable returns (address pool);
+
+    function collect(
+        CollectParams calldata params
+    ) external payable returns (uint256 amount0, uint256 amount1);
+
     function safeTransferFrom(
         address from,
         address to,
         uint256 tokenId
     ) external;
+}
+
+interface IUniswapV3Factory {
+    function createPool(
+        address tokenA,
+        address tokenB,
+        uint24 fee
+    ) external returns (address pool);
+
+    function feeAmountTickSpacing(uint24 fee) external view returns (int24);
 }
 
 struct ExactInputSingleParams {
@@ -56,8 +89,7 @@ struct ExactInputSingleParams {
 }
 
 interface ISwapRouter {
-    function exactInputSingle(ExactInputSingleParams calldata params)
-        external
-        payable
-        returns (uint256 amountOut);
+    function exactInputSingle(
+        ExactInputSingleParams calldata params
+    ) external payable returns (uint256 amountOut);
 }

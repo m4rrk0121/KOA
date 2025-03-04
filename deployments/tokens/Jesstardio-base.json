@@ -1,0 +1,15 @@
+{
+  "tokenAddress": "0x03d6764063b2E78eF2501dcC7a1EfB0Ba4dd4D10",
+  "lpNftId": "2220599",
+  "name": "Jesstardio",
+  "symbol": "Jesstardio",
+  "totalSupply": "1000000000000000000000000000",
+  "lpSupply": "990000000000000000000000000",
+  "recipientWallet": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "recipientAmount": "10000000000000000000000000",
+  "deployer": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "initialTick": -215000,
+  "targetMarketCap": 1000,
+  "ethPriceAtDeployment": 2181.06,
+  "timestamp": "2025-03-04T21:51:30.488Z"
+}

@@ -4,6 +4,7 @@ const path = require("path");
 const { ethers } = require("hardhat");
 const readline = require("readline");
 const https = require("https");
+const { execSync } = require("child_process");
 
 // Create readline interface for user input
 const rl = readline.createInterface({
@@ -91,48 +92,6 @@ function calculateTickForMarketCap(targetMarketCapUSD, tokenSupply, ethPriceUSD,
     actualPriceUSD,
     actualMarketCapUSD
   };
-}
-
-// Function to verify token contract
-async function verifyTokenContract(network, tokenAddress, tokenName, tokenSymbol, tokenSupply) {
-  console.log("\nVerifying token contract...");
-  
-  try {
-    // Wait for the blockchain to index the contract
-    console.log("Waiting 10 seconds for the blockchain to index the contract...");
-    await new Promise(resolve => setTimeout(resolve, 10000));
-    
-    await hre.run("verify:verify", {
-      address: tokenAddress,
-      constructorArguments: [
-        tokenName,
-        tokenSymbol,
-        tokenSupply.toString()
-      ],
-    });
-    
-    console.log("\nToken contract verification successful!");
-    
-    // Determine explorer URL based on the network
-    let explorerUrl;
-    if (network === 'base') {
-      explorerUrl = `https://basescan.org/address/${tokenAddress}`;
-    } else if (network === 'baseSepolia') {
-      explorerUrl = `https://sepolia.basescan.org/address/${tokenAddress}`;
-    } else if (network === 'ethereum') {
-      explorerUrl = `https://etherscan.io/address/${tokenAddress}`;
-    } else {
-      explorerUrl = `https://explorer.${network}.network/address/${tokenAddress}`;
-    }
-    
-    console.log(`View your verified contract at: ${explorerUrl}`);
-    return true;
-  } catch (error) {
-    console.error("\nVerification failed:", error.message);
-    console.log("Note: Sometimes verification can fail if the contract was just deployed.");
-    console.log("You may need to wait longer and try manual verification later.");
-    return false;
-  }
 }
 
 async function main() {
@@ -237,7 +196,6 @@ async function main() {
   const tokenName = await promptQuestion("Enter token name: ");
   const tokenSymbol = await promptQuestion("Enter token symbol: ");
   
-  // Get initial token supply
   let tokenSupply;
   try {
     const rawSupply = await promptQuestion("Enter token supply (default: 100000): ");
@@ -247,33 +205,11 @@ async function main() {
     
     // Get the numeric value for calculations
     const tokenSupplyNumber = parseFloat(ethers.formatEther(tokenSupply));
-    console.log(`Total token supply: ${tokenSupplyNumber.toLocaleString()} tokens`);
+    console.log(`Token supply: ${tokenSupplyNumber.toLocaleString()} tokens`);
   } catch (error) {
     console.error("Invalid token supply. Using default 100000.");
     tokenSupply = ethers.parseEther("100000");
   }
-  
-  // Get recipient wallet for 1% token allocation
-  const recipientWallet = await promptQuestion("Enter wallet address to receive 1% of token supply: ");
-  // Validate wallet address format
-  if (!ethers.isAddress(recipientWallet)) {
-    console.error("Invalid wallet address. Please provide a valid Ethereum address.");
-    rl.close();
-    process.exit(1);
-  }
-  
-  // Calculate 1% for the recipient wallet and 99% for LP
-  const onePercentAmount = tokenSupply * BigInt(1) / BigInt(100);
-  const lpAmount = tokenSupply - onePercentAmount;
-  
-  const onePercentFormatted = parseFloat(ethers.formatEther(onePercentAmount));
-  const lpAmountFormatted = parseFloat(ethers.formatEther(lpAmount));
-  
-  console.log(`1% allocation: ${onePercentFormatted.toLocaleString()} tokens will be sent to ${recipientWallet}`);
-  console.log(`99% allocation: ${lpAmountFormatted.toLocaleString()} tokens will be added to liquidity pool`);
-  
-  // Use lpAmount for market cap calculations
-  const effectiveSupplyForMarketCap = lpAmountFormatted;
   
   // Get fee tier - restricted to 1% (10000) only
   let feeTier = 10000; // Force 1% fee tier
@@ -326,18 +262,18 @@ async function main() {
   }
   
   // Calculate the initial tick based on the target market cap
-  // Use the LP amount (99%) for market cap calculations
-  const tickResult = calculateTickForMarketCap(targetMarketCapUSD, effectiveSupplyForMarketCap, ethPriceUSD, tickSpacing);
+  // Convert tokenSupply from BigInt to regular number
+  const tokenSupplyNumber = parseFloat(ethers.formatEther(tokenSupply));
+  const tickResult = calculateTickForMarketCap(targetMarketCapUSD, tokenSupplyNumber, ethPriceUSD, tickSpacing);
   
   console.log(`\n=== Market Cap and Tick Calculations ===`);
-  console.log(`Target market cap: ${targetMarketCapUSD.toLocaleString()}`);
-  console.log(`Current ETH price: ${ethPriceUSD.toLocaleString()}`);
-  console.log(`Effective LP supply (99%): ${effectiveSupplyForMarketCap.toLocaleString()} tokens`);
+  console.log(`Target market cap: $${targetMarketCapUSD.toLocaleString()}`);
+  console.log(`Current ETH price: $${ethPriceUSD.toLocaleString()}`);
+  console.log(`Token supply: ${tokenSupplyNumber.toLocaleString()} tokens`);
   console.log(`Calculated exact tick: ${tickResult.exactTick.toFixed(2)}`);
   console.log(`Adjusted tick (multiple of ${tickSpacing}): ${tickResult.validTick}`);
-  console.log(`This sets token price to: ${tickResult.actualPriceETH.toFixed(10)} ETH (${tickResult.actualPriceUSD.toFixed(6)})`);
-  console.log(`Resulting market cap: ${tickResult.actualMarketCapUSD.toFixed(2)}`);
-  console.log(`Note: Market cap is calculated based on 99% of tokens in the LP`);
+  console.log(`This sets token price to: ${tickResult.actualPriceETH.toFixed(10)} ETH ($${tickResult.actualPriceUSD.toFixed(6)})`);
+  console.log(`Resulting market cap: $${tickResult.actualMarketCapUSD.toFixed(2)}`);
   
   // Offer to use the calculated tick or let user enter a custom one
   const useCalculatedTick = await promptQuestion(`\nUse calculated tick ${tickResult.validTick} for deployment? (y/n): `);
@@ -429,10 +365,6 @@ async function main() {
   
   console.log(`Using deployment fee: ${ethers.formatEther(deploymentFee)} ETH`);
   
-  // Ask about automatic verification
-  const shouldVerify = await promptQuestion("\nAutomatically verify token after deployment? (y/n): ");
-  const autoVerify = shouldVerify.toLowerCase() === 'y';
-  
   // Final confirmation
   const proceed = await promptQuestion("\nReady to deploy token with these parameters? (y/n): ");
   if (proceed.toLowerCase() !== 'y') {
@@ -442,17 +374,15 @@ async function main() {
   }
   
   try {
-    // Custom parameters for token deployment with the 1% recipient wallet
+    // Prepare parameters for better clarity
     const params = [
       tokenName,
       tokenSymbol,
       tokenSupply,
       initialTick,
       feeTier,
-      generatedSalt,
-      signerAddress,
-      recipientWallet,
-      onePercentAmount
+      generatedSalt, // Use the generated salt from the contract
+      signerAddress
     ];
     
     console.log("Function parameters:", {
@@ -463,8 +393,6 @@ async function main() {
       feeTier,
       salt: generatedSalt,
       deployer: signerAddress,
-      recipient: recipientWallet,
-      recipientAmount: onePercentAmount.toString(),
       value: deploymentFee.toString()
     });
 
@@ -520,9 +448,34 @@ async function main() {
               console.error("Error selector:", "0x" + selectorMatch[1]);
             }
           }
+          
+          // Try to decode any revert reason
+          if (callError.data) {
+            try {
+              const decodedError = KOA.interface.parseError(callError.data);
+              console.error("Decoded error:", decodedError);
+            } catch (e) {
+              console.log("Could not decode error data");
+            }
+          }
         }
       } catch (debugError) {
         console.error("Error during debugging:", debugError.message);
+      }
+      
+      // Try alternative approaches
+      console.log("\n=== Trying alternative approaches ===");
+      
+      // 1. Check if we can just create the token
+      try {
+        console.log("Checking if token creation is the issue...");
+        const mockToken = await ethers.getContractFactory("Token");
+        const mockTokenDeployment = await mockToken.deploy(tokenName, tokenSymbol, tokenSupply);
+        await mockTokenDeployment.waitForDeployment();
+        console.log(`Mock token deployed at: ${await mockTokenDeployment.getAddress()}`);
+        console.log("Token creation works fine!");
+      } catch (tokenError) {
+        console.error("Token creation failed:", tokenError.message);
       }
       
       const continueAnyway = await promptQuestion("\nDo you want to continue with deployment despite gas estimation failure? (y/n): ");
@@ -531,6 +484,10 @@ async function main() {
         rl.close();
         process.exit(0);
       }
+      
+      await deployTokenAnyway(koa, params, deploymentFee);
+      rl.close();
+      return;
     }
     
     console.log("\nExecuting deployment transaction...");
@@ -586,10 +543,7 @@ async function main() {
         lpNftId: event.args.lpNftId.toString(),
         name: event.args.name,
         symbol: event.args.symbol,
-        totalSupply: event.args.supply.toString(),
-        lpSupply: lpAmount.toString(),
-        recipientWallet: recipientWallet,
-        recipientAmount: onePercentAmount.toString(),
+        supply: event.args.supply.toString(),
         deployer: event.args.deployer,
         initialTick: initialTick,
         targetMarketCap: targetMarketCapUSD,
@@ -609,33 +563,106 @@ async function main() {
       
       console.log(`Token information saved to: ${path.join(tokensDir, `${tokenSymbol}-${network}.json`)}`);
       
+      // Get verification instructions for the token
+      console.log("\n=== Token Verification Instructions ===");
+      console.log(`To verify your token on Basescan (${network} network):`);
+      
+      // Get Token contract ABI and bytecode for verification
+      const tokenFactory = await ethers.getContractFactory("Token");
+      const tokenAbi = tokenFactory.interface.formatJson();
+      
+      // Save verification info
+      const verificationInfo = {
+        network,
+        tokenAddress: event.args.tokenAddress,
+        constructorArgs: [
+          event.args.name,
+          event.args.symbol,
+          event.args.supply.toString()
+        ],
+        compilerVersion: "v0.8.19+commit.7dd6d404", // Update this with your actual Solidity version
+        optimization: true,
+        runs: 200 // Standard optimization runs
+      };
+      
+      const verificationPath = path.join(tokensDir, `${tokenSymbol}-${network}-verification.json`);
+      fs.writeFileSync(verificationPath, JSON.stringify(verificationInfo, null, 2));
+      
       // For Base network
+      let verifyCommand;
       let explorerUrl;
       if (network === 'base' || network === 'baseSepolia') {
+        verifyCommand = `npx hardhat verify --network ${network} ${event.args.tokenAddress} "${event.args.name}" "${event.args.symbol}" ${event.args.supply.toString()}`;
         explorerUrl = network === 'base' 
           ? `https://basescan.org/address/${event.args.tokenAddress}` 
           : `https://sepolia.basescan.org/address/${event.args.tokenAddress}`;
       } else if (network === 'ethereum') {
+        verifyCommand = `npx hardhat verify --network ${network} ${event.args.tokenAddress} "${event.args.name}" "${event.args.symbol}" ${event.args.supply.toString()}`;
         explorerUrl = `https://etherscan.io/address/${event.args.tokenAddress}`;
       } else {
+        verifyCommand = `npx hardhat verify --network ${network} ${event.args.tokenAddress} "${event.args.name}" "${event.args.symbol}" ${event.args.supply.toString()}`;
         explorerUrl = `https://explorer.${network}.network/address/${event.args.tokenAddress}`;
       }
+      
+      console.log("\nAutomatic verification command:");
+      console.log(verifyCommand);
       
       console.log("\nToken Explorer URL:");
       console.log(explorerUrl);
       
-      // Verify the token contract directly in this script
-      if (autoVerify) {
-        await verifyTokenContract(
-          network, 
-          event.args.tokenAddress, 
-          event.args.name, 
-          event.args.symbol, 
-          event.args.supply
-        );
-      } else {
-        console.log("\nManual verification command:");
-        console.log(`npx hardhat verify --network ${network} ${event.args.tokenAddress} "${event.args.name}" "${event.args.symbol}" ${event.args.supply.toString()}`);
+      // Add verification script
+      const verifyScript = `
+const hre = require("hardhat");
+
+async function main() {
+  console.log("Verifying token contract...");
+  
+  try {
+    await hre.run("verify:verify", {
+      address: "${event.args.tokenAddress}",
+      constructorArguments: [
+        "${event.args.name}",
+        "${event.args.symbol}",
+        "${event.args.supply.toString()}"
+      ],
+    });
+    
+    console.log("Verification successful!");
+  } catch (error) {
+    console.error("Verification failed:", error);
+  }
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+      `;
+      
+      const verifyScriptPath = path.join(__dirname, `verify-${tokenSymbol}-${network}.js`);
+      fs.writeFileSync(verifyScriptPath, verifyScript);
+      console.log(`\nVerification script created at: ${verifyScriptPath}`);
+      console.log(`Run with: npx hardhat run ${verifyScriptPath} --network ${network}`);
+      
+      // Ask if user wants to verify now
+      const verifyNow = await promptQuestion("\nWould you like to verify the token contract now? (y/n): ");
+      if (verifyNow.toLowerCase() === 'y') {
+        console.log("\nAttempting to verify token contract on Basescan...");
+        try {
+          // Wait a few seconds for the blockchain to settle
+          console.log("Waiting 10 seconds for the blockchain to index the contract...");
+          await new Promise(resolve => setTimeout(resolve, 10000));
+          
+          // Execute verification command
+          execSync(verifyCommand, { stdio: 'inherit' });
+          console.log("\nVerification command completed!");
+          console.log(`View your verified contract at: ${explorerUrl}`);
+        } catch (verifyError) {
+          console.error("\nVerification failed:", verifyError.message);
+          console.log("You can try manual verification later using the command above.");
+        }
       }
     } else {
       console.log("Could not find TokenCreated event in logs. Check the transaction on the block explorer.");
@@ -668,6 +695,33 @@ async function main() {
 
   console.log("\nToken deployment process complete!");
   rl.close();
+}
+
+// Function to deploy token anyway despite gas estimation failure
+async function deployTokenAnyway(koa, params, deploymentFee) {
+  try {
+    console.log("\nExecuting deployment transaction anyway...");
+    const tx = await koa.deployToken(
+      ...params,
+      { 
+        value: deploymentFee,
+        gasLimit: 8000000 // High gas limit for testing
+      }
+    );
+
+    console.log(`Transaction hash: ${tx.hash}`);
+    console.log("Waiting for transaction confirmation...");
+    
+    const receipt = await tx.wait();
+    console.log("Transaction confirmed!");
+    
+    // Process receipt...
+    console.log(`Status: ${receipt.status === 1 ? 'Success' : 'Failed'}`);
+    console.log(`Gas Used: ${receipt.gasUsed.toString()}`);
+    
+  } catch (error) {
+    console.error("Error during forced deployment:", error.message);
+  }
 }
 
 main()

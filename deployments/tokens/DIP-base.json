@@ -1,0 +1,15 @@
+{
+  "tokenAddress": "0x1402CdD9869D6503B91A28A405688ab921112f17",
+  "lpNftId": "2220307",
+  "name": "Moar Dip",
+  "symbol": "DIP",
+  "totalSupply": "420690000000000000000000000000",
+  "lpSupply": "416483100000000000000000000000",
+  "recipientWallet": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "recipientAmount": "4206900000000000000000000000",
+  "deployer": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "initialTick": -246800,
+  "targetMarketCap": 17500,
+  "ethPriceAtDeployment": 2193.59,
+  "timestamp": "2025-03-04T21:29:25.658Z"
+}

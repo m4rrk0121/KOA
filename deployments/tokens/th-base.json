@@ -1,0 +1,12 @@
+{
+  "tokenAddress": "0x040d82bCbE95b0B75F3B426fA9Acd15d7a4Bb5ef",
+  "lpNftId": "2219123",
+  "name": "tit hat",
+  "symbol": "th",
+  "supply": "100000000000000000000000",
+  "deployer": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "initialTick": -96480,
+  "targetMarketCap": 14000,
+  "ethPriceAtDeployment": 2171.57,
+  "timestamp": "2025-03-04T19:17:53.386Z"
+}

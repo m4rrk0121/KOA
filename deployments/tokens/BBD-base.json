@@ -1,0 +1,15 @@
+{
+  "tokenAddress": "0x0C2E2306Bf04F7421D863c4D6Eb0D4ca05d50ea1",
+  "lpNftId": "2219819",
+  "name": "Base Big Dick",
+  "symbol": "BBD",
+  "totalSupply": "420690000000000000000000000000",
+  "lpSupply": "416483100000000000000000000000",
+  "recipientWallet": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "recipientAmount": "4206900000000000000000000000",
+  "deployer": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "initialTick": -243200,
+  "targetMarketCap": 25000,
+  "ethPriceAtDeployment": 2166.94,
+  "timestamp": "2025-03-04T20:45:41.937Z"
+}

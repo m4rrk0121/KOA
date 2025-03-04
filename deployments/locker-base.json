@@ -1,0 +1,8 @@
+{
+  "MultiPositionLiquidityLocker": "0x394197280C83189C851813A0F578AB54Af53C861",
+  "network": "base",
+  "timestamp": "2025-03-04T21:25:35.685Z",
+  "deployer": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "positionManager": "0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1",
+  "feeCollector": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146"
+}

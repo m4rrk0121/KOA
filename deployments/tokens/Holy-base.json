@@ -1,0 +1,12 @@
+{
+  "tokenAddress": "0x11E4C9FC25D4CA373bA332b701b74f0beb6F7d62",
+  "lpNftId": "2219495",
+  "name": "Holy Grail",
+  "symbol": "Holy",
+  "supply": "1000000000000000000000000000",
+  "deployer": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "initialTick": -188000,
+  "targetMarketCap": 15000,
+  "ethPriceAtDeployment": 2172.04,
+  "timestamp": "2025-03-04T20:04:48.601Z"
+}

@@ -1,0 +1,12 @@
+{
+  "network": "base",
+  "tokenAddress": "0x11E4C9FC25D4CA373bA332b701b74f0beb6F7d62",
+  "constructorArgs": [
+    "Holy Grail",
+    "Holy",
+    "1000000000000000000000000000"
+  ],
+  "compilerVersion": "v0.8.19+commit.7dd6d404",
+  "optimization": true,
+  "runs": 200
+}

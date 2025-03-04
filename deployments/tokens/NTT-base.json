@@ -1,0 +1,15 @@
+{
+  "tokenAddress": "0x2EdEA84362E29E6ab006fC6D8E8E51cC0Dd4498B",
+  "lpNftId": "2220368",
+  "name": "No Tariffs Today",
+  "symbol": "NTT",
+  "totalSupply": "690420000000000000000000000",
+  "lpSupply": "683515800000000000000000000",
+  "recipientWallet": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "recipientAmount": "6904200000000000000000000",
+  "deployer": "0x86e8d2532D531ECEBa1316f5E545C8AF7B650146",
+  "initialTick": -142400,
+  "targetMarketCap": 1000000,
+  "ethPriceAtDeployment": 2217.97,
+  "timestamp": "2025-03-04T21:32:47.348Z"
+}
